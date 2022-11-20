@@ -3,8 +3,11 @@ package com.unify.validation.web.rest;
 import com.unify.validation.service.UserService;
 import com.unify.validation.service.dto.UserDTO;
 import com.unify.validation.web.rest.errors.UserNotFoundException;
+import com.unify.validation.web.rest.util.PaginationUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +37,18 @@ public class UserResource {
     public List<UserDTO> findAll() {
         log.info("REST request to get all users");
         return userService.findAll();
+    }
+
+    @GetMapping("/users/filter")
+    public ResponseEntity<List<UserDTO>> filter(Pageable pageable) {
+        log.info("REST request to get all users");
+
+        Page<UserDTO> page = userService.filter(pageable);
+
+        HttpHeaders headers = PaginationUtil.generateHeaders(page);
+
+
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     @GetMapping("/users/{id}")

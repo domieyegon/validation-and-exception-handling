@@ -7,6 +7,8 @@ import com.unify.validation.service.mapper.UserMapper;
 import com.unify.validation.web.rest.errors.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,13 @@ public class UserService {
     public List<UserDTO> findAll() {
         log.info("Request to get all users");
         return userRepository.findAll().stream().map(userMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserDTO> filter(Pageable pageable){
+        log.info("Request to get users by page: {}", pageable);
+
+        return userRepository.findAllBy(pageable).map(userMapper::toDto);
     }
 
     @Transactional(readOnly = true)
